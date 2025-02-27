@@ -1,6 +1,5 @@
-# Allocator makefile
 PHONY := all clean
-CLEAN := target/*.o target/allocator.a
+CLEAN := target
 
 SRC_DIR := src
 OBJ_DIR := target
@@ -10,13 +9,16 @@ TARGET := $(OBJ_DIR)/allocator.a
 
 all: $(TARGET)
 
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.asm
+$(OBJ_DIR):
+	mkdir -p $(OBJ_DIR)
+
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.asm | $(OBJ_DIR)
 	nasm -f elf64 -o $@ $<
 
 $(TARGET): $(OBJECTS)
 	ar rcs $@ $^
 
 clean:
-	rm -f $(CLEAN)
+	rm -rf $(CLEAN)
 
 .PHONY: $(PHONY)
