@@ -13,6 +13,6 @@ allocator_init:
   sub eax, 4            ; subtract unit.size by the size of the header
   or eax, 0x80000000    ; set MSB to indicate area is free
 
-  mov rbx, [rdi+4]      ; get the unit.ptr member
+  mov rbx, [rdi+8]      ; get the unit.ptr member
   mov [rbx], eax        ; set header at the pointer beginning
   ret                   ; return to caller

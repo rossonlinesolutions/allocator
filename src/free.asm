@@ -12,7 +12,7 @@ global allocator_free
 allocator_free:
   xor rax, rax         ; clear rax
   mov eax, [rdi]       ; get size of memory area in eax
-  mov rbx, [rdi+4]     ; get in rbx memory pointer
+  mov rbx, [rdi+8]     ; get in rbx memory pointer
   mov rcx, rsi         ; get in rcx the pointer to free
   ; eax and rbx are const
   ; rcx is ponter

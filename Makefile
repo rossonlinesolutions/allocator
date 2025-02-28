@@ -21,4 +21,8 @@ $(TARGET): $(OBJECTS)
 clean:
 	rm -rf $(CLEAN)
 
+CLEAN += Example1
+Example1: $(TARGET)
+	gcc -o Example1 examples/example1.c target/allocator.a
+
 .PHONY: $(PHONY)

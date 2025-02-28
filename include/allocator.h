@@ -53,6 +53,6 @@ extern void allocator_free(struct allocator_unit* unit, void* ptr);
  * 
  * @param unit The allocation unit to initialize
  */
-extern void allocator_init(struct allocator_init* unit);
+extern void allocator_init(struct allocator_unit* unit);
 
 #endif

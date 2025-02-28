@@ -11,7 +11,7 @@ global allocator_alloc
 allocator_alloc:
   xor rax, rax         ; clear rax
   mov eax, [rdi]       ; get size of memory area in eax
-  mov rbx, [rdi+4]     ; get in rbx memory pointer
+  mov rbx, [rdi+8]     ; get in rbx memory pointer
   mov ecx, esi         ; get allocation size in ebx
   mov rdx, rbx         ; set current searching pointer
   ; rax, rbx and rcx are const
