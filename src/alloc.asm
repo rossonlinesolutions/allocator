@@ -10,9 +10,10 @@ global allocator_alloc
 ; rsi: size
 allocator_alloc:
   xor rax, rax         ; clear rax
+  xor rcx, rcx         ; clear rcx
   mov eax, [rdi]       ; get size of memory area in eax
   mov rbx, [rdi+8]     ; get in rbx memory pointer
-  mov ecx, esi         ; get allocation size in ebx
+  mov ecx, esi         ; get allocation size in ecx
   mov rdx, rbx         ; set current searching pointer
   ; rax, rbx and rcx are const
   ; rdx is reserved as pointer counter
@@ -48,7 +49,7 @@ allocator_alloc:
   ; still have in esi the header for the block
   mov edi, 0x7FFFFFFF ; set absolute value mask in edi
   and edi, esi        ; get absolute value in edi
-  cmp edi, eax        ; compare block size with required size
+  cmp edi, ecx        ; compare block size with required size
   jl .Lback           ; if the block is lower than the required size, prepare to get back
 
   ; have now:
@@ -56,14 +57,14 @@ allocator_alloc:
   ; edi: block size
   mov esi, edi        ; set the block header to the block size
   ;sub esi, 4          ; remove the next header size
-  sub esi, eax        ; subtract absolute size with the required size
+  sub esi, ecx        ; subtract absolute size with the required size
 
-  mov [rdx], eax      ; set the new header
+  mov [rdx], ecx      ; set the new header
 
   cmp esi, 4          ; compare esi with 4
-  jl .L3              ; don't create next header if not enough space
+  jge .L3              ; don't create next header if not enough space
 
-  add esi, eax
+  add esi, ecx        ; restore old header
   mov [rdx], esi      ; in this case, set rdx to current block size
 
   ; and return
@@ -74,10 +75,10 @@ allocator_alloc:
 .L3:
   ; divide header now here
   sub esi, 4          ; see uncommented instruction
-  add rax, 4          ; add to block size the header
-  add rax, rdx        ; set rax to the pointer to the new header
+  add rcx, 4          ; add to block size the header
+  add rcx, rdx        ; set rax to the pointer to the new header
   or esi, 0x80000000  ; set free flag to new header
-  mov [rax], esi      ; insert new header for the new created block after the one we will use
+  mov [rcx], esi      ; insert new header for the new created block after the one we will use
 
   mov rax, rdx        ; set as return value the current pointer
   add rax, 4          ; skip the header

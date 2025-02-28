@@ -61,7 +61,7 @@ global allocator_merge_free
 allocator_merge_free:
   ; free registers:
   ; rax, rbx, rcx
-  xor rax, rax
+  xor rax, rax         ; clear rax
   mov eax, 0x7FFFFFFF  ; set rax to bitmask to clear unused bit
   and eax, edi         ; get in eax absolute value of length of block
   add rax, 4           ; set rax to the length to skip to the next header
@@ -90,6 +90,7 @@ allocator_merge_free:
   and ecx, 0x7FFFFFFF  ; clear in ecx flag
   add edi, ecx         ; set in edi the sum of both blocks
   add edi, 4           ; add aswell the second header (not used anymore)
+  or edi, 0x80000000   ; set unused flag
   mov [rsi], edi       ; store in rsi the header
   xor rax, rax         ; clear rax
   ret

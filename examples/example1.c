@@ -14,8 +14,6 @@ int main(void) {
 
     allocator_init(&unit);
 
-    printf("HERE\n");
-
     // allocate 12 bytes for "Hello world\0"
     char* hello = NULL;
 
@@ -31,7 +29,7 @@ int main(void) {
     // move string to `hello`
     strcpy(hello, "Hello World");
     size_t len = strlen(hello);
-    printf("Addr1 length: %ul", len);
+    printf("Addr1 string length: %u\n", len);
 
     // allocate some random pointer
     int* ptr;
@@ -54,7 +52,7 @@ int main(void) {
     uint32_t header = *((uint32_t*)(mem));
     header &= 0x7FFFFFFF;
 
-    if(header == (4096 - 4)) {
+    if(header == (4092)) {
         printf("SUCCESS\n");
     }else{
         printf("FAILURE: Have %u\n", header);
