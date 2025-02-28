@@ -3,6 +3,10 @@
 
 #include <stdint.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * The structure of an allocation unit (page/memory block).
  */
@@ -63,5 +67,9 @@ extern void allocator_init(struct allocator_unit* unit);
  * @return 0 if used, else 1
  */
 extern int allocator_check_free(struct allocator_unit* unit);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
