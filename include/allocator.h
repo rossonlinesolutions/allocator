@@ -55,4 +55,13 @@ extern void allocator_free(struct allocator_unit* unit, void* ptr);
  */
 extern void allocator_init(struct allocator_unit* unit);
 
+/**
+ * Check if allocation unit is used.
+ * 
+ * @param unit The allocation unit
+ * 
+ * @return 0 if used, else 1
+ */
+extern int allocator_check_free(struct allocator_unit* unit);
+
 #endif

@@ -94,3 +94,72 @@ allocator_merge_free:
   mov [rsi], edi       ; store in rsi the header
   xor rax, rax         ; clear rax
   ret
+
+global allocator_check_free
+
+; rdi: unit pointer
+allocator_check_free:
+  push rbp             ; store stack base
+  mov rbp, rsp         ; set stack base to stack pointer
+
+  mov eax, [rdi]       ; get in eax total size
+  sub eax, 4           ; set expected header length in eax
+  mov ebx, eax         ; save eax in ebx
+  or eax, 0x80000000   ; set free flag in eax
+  push rax             ; store expected header in eax
+  push 0               ; reserve stack to store in .L1 before-after headers
+  mov rcx, [rdi+8]     ; get in rcx the memory block address
+  push rdi             ; push on [rbp-24] the unit pointer
+  mov ecx, [rcx]       ; get in ecx the first header
+
+  ; first check if base is used, since if yes, no sense to keep searching
+  mov edx, 0x80000000  ; get in edx bitmask to check if used
+  and edx, ecx         ; get in edx the flag
+  cmp edx, 0           ; check if edx is 0
+  jne .Lstart          ; if is not null, we can continue
+
+.Lfail:
+  ; else return
+  xor rax, rax         ; clear rax (0 as used)
+
+  mov rsp, rbp         ; restore rsp
+  pop rbp              ; load rbp
+  ret                  ; return to caller
+
+  ; if we get here, we try to merge blocks until we get the size in 
+.Lstart:
+  mov eax, [rbp-8]     ; load in eax expected header
+  mov rbx, [rbp-24]    ; load in rbx unit pointer
+  mov rbx, [rbx+8]     ; load in ebx current header
+  mov ebx, [rbx]       ; get current header in ebx
+  cmp eax, ebx         ; compare current header with new header
+  jne .L1              ; if not equals, try to merge blocks
+
+  mov rax, 1           ; if we get here, all success
+  mov rsp, rbp         ; restore rsp
+  pop rbp              ; load rbp
+  ret                  ; return to caller
+
+  ; if get here, try to merge blocks
+.L1:
+  mov [rbp-16], ebx    ; save current header from ebx
+
+  ; prepare to call allocator_merge_free
+  mov edi, ebx         ; 1. parameter: the current header
+
+  mov rsi, [rbp-24]    ; get in rsi unit structure
+  mov rdx, [rsi]       ; set in rdx the size of the memory block
+  mov rsi, [rsi+8]     ; 2. parameter get in rsi the pointer to memory block
+  add rdx, rsi         ; 3. parameter get in rdx pointer to end of block
+  call allocator_merge_free ; try merging thoose blocks
+
+  mov rsi, [rbp-24]    ; get in rsi unit structure
+  mov rsi, [rsi+8]     ; get in rsi memory block pointer
+  mov esi, [rsi]       ; get in esi the current header
+  mov eax, [rbp-16]    ; load in eax the previous header
+  cmp eax, esi         ; compare both headers
+  je .Lfail            ; if are equals, nothing changed and no sense to continue
+
+  jmp .Lstart          ; otherwise, return to loop start with check if ready
+
+

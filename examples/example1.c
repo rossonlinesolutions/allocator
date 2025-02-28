@@ -59,5 +59,13 @@ int main(void) {
         return -1;
     }
 
+    int res = allocator_check_free(&unit);
+    if(res == 1) {
+        printf("UNUSED\n");
+    }else{
+        printf("FAILURE: USED\n");
+        return -1;
+    }
+
     return 0;
 }
